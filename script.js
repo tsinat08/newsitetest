@@ -7,20 +7,20 @@ let beachDoorPath="https://s3.amazonaws.com/codecademy-content/projects/chore-do
 let spaceDoorPath ="https://s3.amazonaws.com/codecademy-content/projects/chore-door/images/space.svg";
 let numClosedDoors =3;
 let closedDoorPath="https://s3.amazonaws.com/codecademy-content/projects/chore-door/images/closed_door.svg";
+let currentlyPlaying = true;
 let openDoor1; let openDoor2; let openDoor3;
 
+const isBot=(door)=> door.src === botDoorPath
 const isClicked=(door)=>{
-    if(door.src === closedDoorPath){
-        return false;
-    }else{
-        return true;
-    }
+    return door.src !== closedDoorPath;
 }
 
 const playDoor=(door)=>{
     numClosedDoors--;
     if (numClosedDoors ===0){
         gameOver('win');
+    }else if (isBot(door)){
+        gameOver('lose');
     }
 }
 const randomChoreDoorGenerator=()=>{
@@ -40,26 +40,43 @@ const randomChoreDoorGenerator=()=>{
   }
 }
 door1.onclick = () => {
-    if(!isClicked(doorImage1)) {
+    if(currentlyPlaying &&!isClicked(doorImage1)) {
     doorImage1.src=openDoor1;
-    playDoor();
+    playDoor(door1);
     }
 }
 door2.onclick = () => {
-    if(!isClicked(doorImage2)) {
+    if(currentlyPlaying &&!isClicked(doorImage2)) {
     doorImage2.src=openDoor2;
-    playDoor();
+    playDoor(door2);
     }
 }
 door3.onclick = () => {
-    if(!isClicked(doorImage3)) {
+    if(currentlyPlaying &&!isClicked(doorImage3)) {
     doorImage3.src=openDoor3;
-    playDoor();
+    playDoor(door3);
     }
+}
+startButton.onclick = () => {
+    if(!currentlyPlaying) {
+        startRound();
+    }
+}
+const startRound=()=>{
+    door1.src=closedDoorPath;
+    door2.src=closedDoorPath;
+    door3.src=closedDoorPath;
+    numClosedDoors=3;
+    startButton.innerHTML='Good luck!';
+    currentlyPlaying=true;
+    randomChoreDoorGenerator();
 }
 const gameOver=(status)=>{
     if (status === 'win') {
         startButton.innerHTML = 'You win! Play again?';
+    } else {
+            startButton.innerHTML = 'Game over! Play again?';
+        }
+    currentlyPlaying=false;
     }
-}
-randomChoreDoorGenerator();
+startRound();
